@@ -21,7 +21,6 @@ File :: File (string &fileName, unsigned int fileLength)
 
 File :: ~File ()
 {
-    fileName.~basic_string();
     free (this);
 }
 

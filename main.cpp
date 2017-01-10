@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include <QApplication>
+#include "file_processing.h"
 
 int main(int argc, char *argv[])
 {
@@ -9,3 +10,6 @@ int main(int argc, char *argv[])
 
     return a.exec();
 }
+
+
+
