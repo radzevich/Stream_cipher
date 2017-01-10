@@ -1,51 +1,77 @@
 #include "file_processing.h"
 
 
-//File open dialog, getting chosed file name.
-QString File_processing :: getFileName ()
+File :: File (string &fileName)
 {
-    QString filename = QFileDialog :: getOpenFileName (
-                this,
-                tr ("Open file"),
-                "/home/virtuain",
-                "All files (*.*);; Pictures (*.jpeg, *.png, *.bmp);; Music (*.mp3);; Video (*.mp4)"
-                );
-    return filename;
+    this->fileName = fileName;
+
+    ifstream fin (&(this->fileName[0]), ios_base :: in);
+
+    this->fileLength = countFileSize (fin);
+
+    fin.close();
+}
+
+File :: File (string &fileName, unsigned int fileLength)
+{
+    this->fileName = fileName;
+    this->fileLength = fileLength;
+}
+
+
+File :: ~File ()
+{
+    fileName.~basic_string();
+    free (this);
+}
+
+
+char *File :: getFileName ()
+{
+    return &(this->fileName[0]);
 }
 
 
 //Reading data from file.
-char *File_processing :: readFromFile (QString &fileName)
+char *File :: readFromFile ()
 {
-    ifstream fin (getFileName().toStdString());
+    ifstream fin (&(this->fileName[0]), ios_base :: in);
 
     if (!fin.is_open())
         return NULL;
     else
     {
-        unsigned int fileSize = getFileSize(fin);
+        char * buff = (char *)calloc (fileLength, 1);
 
-        char * buff = calloc (fileSize, 1);
-
-        for (unsigned int i = 0; i < fileSize; i++)
+        for (unsigned int i = 0; i < fileLength; i++)
             fin >> buff [i];
-    }
 
-    return buff;
+        fin.close();
+
+        return buff;
+    }
 }
 
 
 //Saving data to file.
-void File_processing :: saveToFile (char *data)
+void File :: saveToFile (char *data)
 {
+    ofstream fout (&(this->fileName[0]));
 
+    for (unsigned int i = 0; i < fileLength; i++)
+        fout << data [i];
+
+    fout.close();
 }
 
 
 //Getting file size.
-unsigned int File_processing :: getFileSize (FILE file)
+unsigned int File :: countFileSize (ifstream &file)
 {
     file.seekg (0, std :: ios :: end);
-    size = file.tellg();
-    return size;
+    return file.tellg();
 }
+
+
+
+
